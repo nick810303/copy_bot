@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -10,9 +11,9 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#1a1a1c;
-  --bg2:#222226;
-  --line:#2e2e33;
+  --bg:#45403E;
+  --bg2:#4f4a47;
+  --line:#5a5450;
   --white:#f0f0f0;
   --gray:#888;
   --gray2:#666;
@@ -25,39 +26,36 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Noto San
 
 .box{width:100%;display:flex;flex-direction:column;align-items:center;gap:16px}
 
-.av{width:44px;height:44px;border-radius:50%;background:var(--bg2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;animation:bob 1.8s ease-in-out infinite;transition:background .2s,border-color .2s}
-.av.done{animation:none;border-color:var(--green)}
-.av.error{animation:none;border-color:var(--red)}
+.av{width:44px;height:44px;border-radius:50%;background:var(–bg2);border:1px solid var(–line);display:flex;align-items:center;justify-content:center;font-size:20px;animation:bob 1.8s ease-in-out infinite;transition:background .2s,border-color .2s}
+.av.done{animation:none;border-color:var(–green)}
+.av.error{animation:none;border-color:var(–red)}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
 .status{text-align:center;min-height:34px}
-.status-msg{font-size:13px;color:var(--gray);transition:opacity .2s,color .2s;line-height:1.4}
-.status-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--gray3);letter-spacing:.06em;margin-top:3px;transition:opacity .2s,color .2s}
-.status.done .status-msg{color:var(--green);font-weight:500}
-.status.error .status-msg{color:var(--red);font-weight:500}
-.status.done .status-sub{color:var(--green);opacity:.7}
-.status.error .status-sub{color:var(--red);opacity:.7}
+.status-msg{font-size:13px;color:var(–gray);transition:opacity .2s,color .2s;line-height:1.4}
+.status-sub{font-family:‘DM Mono’,monospace;font-size:10px;color:var(–gray3);letter-spacing:.06em;margin-top:3px;transition:opacity .2s,color .2s}
+.status.done .status-msg{color:var(–green);font-weight:500}
+.status.error .status-msg{color:var(–red);font-weight:500}
+.status.done .status-sub{color:var(–green);opacity:.7}
+.status.error .status-sub{color:var(–red);opacity:.7}
 
-.bar-wrap{width:100px;height:2px;background:var(--line);border-radius:2px;overflow:hidden}
-.bar{height:100%;width:5%;background:var(--white);border-radius:2px;transition:width 1.4s cubic-bezier(.4,0,.2,1),background .2s}
+.bar-wrap{width:100px;height:2px;background:var(–line);border-radius:2px;overflow:hidden}
+.bar{height:100%;width:5%;background:var(–white);border-radius:2px;transition:width 1.4s cubic-bezier(.4,0,.2,1),background .2s}
 
-/* toast — 成功 / 失敗時從底部上浮的通知 */
-.toast{position:fixed;left:50%;bottom:48px;transform:translate(-50%,24px);width:calc(100% - 32px);max-width:360px;padding:11px 14px;background:var(--bg2);border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;gap:11px;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .4s cubic-bezier(.34,1.2,.64,1);box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.toast{position:fixed;left:50%;bottom:48px;transform:translate(-50%,24px);width:calc(100% - 32px);max-width:360px;padding:11px 14px;background:var(–bg2);border:1px solid var(–line);border-radius:8px;display:flex;align-items:center;gap:11px;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .4s cubic-bezier(.34,1.2,.64,1);box-shadow:0 6px 20px rgba(0,0,0,.4)}
 .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .toast.error{border-color:rgba(224,107,107,.35);background:#2a1f21}
-.toast-icon{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center}
-.toast.error .toast-icon{background:var(--red)}
+.toast-icon{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(–green);display:flex;align-items:center;justify-content:center}
+.toast.error .toast-icon{background:var(–red)}
 .toast-icon svg{width:11px;height:11px;stroke:#1a1a1c;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .toast-content{flex:1;min-width:0}
-.toast-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--gray2);letter-spacing:.07em;margin-bottom:2px}
-.toast.error .toast-label{color:var(--red);opacity:.75}
-.toast-text{font-size:12px;color:var(--white);line-height:1.4;word-break:break-all;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;user-select:all}
+.toast-label{font-family:‘DM Mono’,monospace;font-size:9px;color:var(–gray2);letter-spacing:.07em;margin-bottom:2px}
+.toast.error .toast-label{color:var(–red);opacity:.75}
+.toast-text{font-size:12px;color:var(–white);line-height:1.4;word-break:break-all;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;user-select:all}
 
-.err-hint{font-size:11px;color:var(--gray);text-align:center;line-height:1.6;display:none}
+.err-hint{font-size:11px;color:var(–gray);text-align:center;line-height:1.6;display:none}
 .app.error .err-hint{display:block}
 
-.footer{position:fixed;bottom:0;left:0;right:0;padding:8px 14px max(8px,env(safe-area-inset-bottom));text-align:center;z-index:1}
-.ft-name{font-family:'DM Mono',monospace;font-size:9px;color:var(--gray3);letter-spacing:.08em}
 </style>
 </head>
 <body>
@@ -69,7 +67,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Noto San
       <div class="status-sub" id="sub">PREPARING</div>
     </div>
     <div class="bar-wrap"><div class="bar" id="bar"></div></div>
-    <div class="err-hint">複製失敗,請長按下方文字手動複製</div>
+    <div class="err-hint">複製失敗，請長按下方文字手動複製</div>
   </div>
 </div>
 
@@ -82,8 +80,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Noto San
     <div class="toast-text" id="toastText">—</div>
   </div>
 </div>
-
-<div class="footer"><div class="ft-name">小泰空複製機器人</div></div>
 
 <script>
 const LIFF_ID = '2009610906-6Oy95YqC';
@@ -147,14 +143,16 @@ async function run() {
     const text = new URLSearchParams(location.search).get('text');
     if (!text) throw new Error('no text');
 
+    // ✅ 先複製，趁使用者剛開啟 LIFF 的手勢還有效
+    await navigator.clipboard.writeText(text);
+
+    // 複製成功後再跑動畫
     await delay(420);
     setStep(STEPS[1]);
     await delay(520);
     setStep(STEPS[2]);
-
-    await navigator.clipboard.writeText(text);
-
     await delay(380);
+
     setStep(DONE);
     status.classList.add('done');
     av.classList.add('done');
@@ -182,5 +180,6 @@ async function run() {
 }
 run();
 </script>
+
 </body>
 </html>
