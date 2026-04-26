@@ -1,110 +1,186 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小泰空複製機器人</title>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <style>
-        :root {
-            --bg-color: #FAF8F5; /* 小泰空米色背景 */
-            --primary-color: #5D4037; /* 小泰空深棕色 */
-            --accent-color: #8C7355; /* 金棕色 */
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--primary-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container { text-align: center; padding: 30px; }
-        .loader {
-            border: 3px solid #E0D7D0;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .status-zh { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
-        .status-en { font-size: 0.9rem; opacity: 0.7; letter-spacing: 1px; }
-        .success-icon { font-size: 50px; color: var(--accent-color); display: none; margin-bottom: 15px; }
-        
-        #error-ui { display: none; color: #d32f2f; }
-        #fallback-box { 
-            margin-top: 15px; padding: 12px; background: #FFF; border: 1px solid #DDD;
-            border-radius: 8px; font-size: 0.9rem; user-select: all; word-break: break-all;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>小泰空複製機器人</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#1a1a1c;
+  --bg2:#222226;
+  --line:#2e2e33;
+  --white:#f0f0f0;
+  --gray:#888;
+  --gray2:#666;
+  --gray3:#444;
+  --red:#E06B6B;
+  --green:#5BB37D;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Noto Sans TC',sans-serif;color:var(--white)}
+.app{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;max-width:480px;margin:0 auto;padding:24px}
+
+.box{width:100%;display:flex;flex-direction:column;align-items:center;gap:16px}
+
+.av{width:44px;height:44px;border-radius:50%;background:var(--bg2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;animation:bob 1.8s ease-in-out infinite;transition:background .2s,border-color .2s}
+.av.done{animation:none;border-color:var(--green)}
+.av.error{animation:none;border-color:var(--red)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+.status{text-align:center;min-height:34px}
+.status-msg{font-size:13px;color:var(--gray);transition:opacity .2s,color .2s;line-height:1.4}
+.status-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--gray3);letter-spacing:.06em;margin-top:3px;transition:opacity .2s,color .2s}
+.status.done .status-msg{color:var(--green);font-weight:500}
+.status.error .status-msg{color:var(--red);font-weight:500}
+.status.done .status-sub{color:var(--green);opacity:.7}
+.status.error .status-sub{color:var(--red);opacity:.7}
+
+.bar-wrap{width:100px;height:2px;background:var(--line);border-radius:2px;overflow:hidden}
+.bar{height:100%;width:5%;background:var(--white);border-radius:2px;transition:width 1.4s cubic-bezier(.4,0,.2,1),background .2s}
+
+/* toast — 成功 / 失敗時從底部上浮的通知 */
+.toast{position:fixed;left:50%;bottom:48px;transform:translate(-50%,24px);width:calc(100% - 32px);max-width:360px;padding:11px 14px;background:var(--bg2);border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;gap:11px;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .4s cubic-bezier(.34,1.2,.64,1);box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast.error{border-color:rgba(224,107,107,.35);background:#2a1f21}
+.toast-icon{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center}
+.toast.error .toast-icon{background:var(--red)}
+.toast-icon svg{width:11px;height:11px;stroke:#1a1a1c;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.toast-content{flex:1;min-width:0}
+.toast-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--gray2);letter-spacing:.07em;margin-bottom:2px}
+.toast.error .toast-label{color:var(--red);opacity:.75}
+.toast-text{font-size:12px;color:var(--white);line-height:1.4;word-break:break-all;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;user-select:all}
+
+.err-hint{font-size:11px;color:var(--gray);text-align:center;line-height:1.6;display:none}
+.app.error .err-hint{display:block}
+
+.footer{position:fixed;bottom:0;left:0;right:0;padding:8px 14px max(8px,env(safe-area-inset-bottom));text-align:center;z-index:1}
+.ft-name{font-family:'DM Mono',monospace;font-size:9px;color:var(--gray3);letter-spacing:.08em}
+</style>
 </head>
 <body>
-
-    <div class="container">
-        <div id="loading-ui">
-            <div class="loader"></div>
-            <div class="status-zh">正在複製資訊...</div>
-            <div class="status-en">Copying Information...</div>
-        </div>
-
-        <div id="success-ui">
-            <div class="success-icon" id="check-mark">✓</div>
-            <div class="status-zh">複製成功！</div>
-            <div class="status-en">Copy Successful!</div>
-        </div>
-
-        <div id="error-ui">
-            <div class="status-zh">複製失敗</div>
-            <div class="status-en">Copy Failed</div>
-            <div id="fallback-box"></div>
-            <p style="font-size: 12px; margin-top: 10px;">請長按上方文字手動複製<br>Please long-press to copy</p>
-        </div>
+<div class="app" id="app">
+  <div class="box">
+    <div class="av" id="av">🤖</div>
+    <div class="status" id="status">
+      <div class="status-msg" id="msg">準備複製…</div>
+      <div class="status-sub" id="sub">PREPARING</div>
     </div>
+    <div class="bar-wrap"><div class="bar" id="bar"></div></div>
+    <div class="err-hint">複製失敗,請長按下方文字手動複製</div>
+  </div>
+</div>
 
-    <script>
-        // 【設定區】填入你的 LIFF ID
-        const MY_LIFF_ID = "2009610906-6Oy95YqC"; 
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toastIcon">
+    <svg viewBox="0 0 12 12"><path d="M2.5 6.5 L5 9 L9.5 3.5"/></svg>
+  </div>
+  <div class="toast-content">
+    <div class="toast-label" id="toastLabel">COPIED</div>
+    <div class="toast-text" id="toastText">—</div>
+  </div>
+</div>
 
-        async function runCopyTask() {
-            try {
-                // 1. 初始化 LIFF
-                await liff.init({ liffId: MY_LIFF_ID });
+<div class="footer"><div class="ft-name">小泰空複製機器人</div></div>
 
-                // 2. 解析網址參數 ?text=
-                const params = new URLSearchParams(window.location.search);
-                const text = params.get('text');
+<script>
+const LIFF_ID = '2009610906-6Oy95YqC';
 
-                if (!text) throw new Error("No text provided");
+const STEPS = [
+  { av:'🤖', msg:'準備複製…',   sub:'PREPARING', pct:15 },
+  { av:'📋', msg:'讀取訊息…',   sub:'READING',   pct:55 },
+  { av:'✨', msg:'寫入剪貼簿…', sub:'WRITING',   pct:90 },
+];
+const DONE  = { av:'✅', msg:'已複製到剪貼簿', sub:'COPIED', pct:100 };
+const ERROR = { av:'⚠️', msg:'複製失敗',       sub:'ERROR',  pct:100 };
 
-                // 3. 執行複製
-                await navigator.clipboard.writeText(text);
+const ICON_CHECK = '<svg viewBox="0 0 12 12"><path d="M2.5 6.5 L5 9 L9.5 3.5"/></svg>';
+const ICON_CROSS = '<svg viewBox="0 0 12 12"><path d="M3 3 L9 9 M9 3 L3 9"/></svg>';
 
-                // 4. 顯示成功 UI
-                document.getElementById('loading-ui').style.display = 'none';
-                document.getElementById('check-mark').style.display = 'block';
-                document.getElementById('success-ui').style.display = 'block';
+const av = document.getElementById('av');
+const msg = document.getElementById('msg');
+const sub = document.getElementById('sub');
+const bar = document.getElementById('bar');
+const status = document.getElementById('status');
+const app = document.getElementById('app');
+const toast = document.getElementById('toast');
+const toastIcon = document.getElementById('toastIcon');
+const toastLabel = document.getElementById('toastLabel');
+const toastText = document.getElementById('toastText');
 
-                // 5. 0.8 秒後自動關閉（留一點點時間讓客人看到打勾）
-                setTimeout(() => { liff.closeWindow(); }, 800);
+function setStep(s) {
+  msg.style.opacity = '0';
+  sub.style.opacity = '0';
+  setTimeout(() => {
+    av.textContent = s.av;
+    msg.textContent = s.msg;
+    sub.textContent = s.sub;
+    msg.style.opacity = '1';
+    sub.style.opacity = '1';
+  }, 170);
+  bar.style.width = s.pct + '%';
+}
 
-            } catch (err) {
-                console.error(err);
-                document.getElementById('loading-ui').style.display = 'none';
-                document.getElementById('success-ui').style.display = 'none';
-                document.getElementById('error-ui').style.display = 'block';
-                
-                const params = new URLSearchParams(window.location.search);
-                document.getElementById('fallback-box').innerText = params.get('text') || "Error: No Content";
-            }
-        }
+function showToast(mode, text) {
+  if (mode === 'success') {
+    toast.classList.remove('error');
+    toastIcon.innerHTML = ICON_CHECK;
+    toastLabel.textContent = 'COPIED';
+  } else {
+    toast.classList.add('error');
+    toastIcon.innerHTML = ICON_CROSS;
+    toastLabel.textContent = 'COPY FAILED';
+  }
+  toastText.textContent = text;
+  toast.classList.add('show');
+}
 
-        window.onload = runCopyTask;
-    </script>
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function run() {
+  setTimeout(() => bar.style.width = STEPS[0].pct + '%', 80);
+
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    const text = new URLSearchParams(location.search).get('text');
+    if (!text) throw new Error('no text');
+
+    await delay(420);
+    setStep(STEPS[1]);
+    await delay(520);
+    setStep(STEPS[2]);
+
+    await navigator.clipboard.writeText(text);
+
+    await delay(380);
+    setStep(DONE);
+    status.classList.add('done');
+    av.classList.add('done');
+    bar.style.background = 'var(--green)';
+
+    await delay(120);
+    showToast('success', text);
+
+    await delay(900);
+    liff.closeWindow();
+
+  } catch (e) {
+    console.error(e);
+    setStep(ERROR);
+    status.classList.add('error');
+    av.classList.add('error');
+    bar.style.background = 'var(--red)';
+    app.classList.add('error');
+    const text = new URLSearchParams(location.search).get('text');
+    if (text) {
+      await delay(120);
+      showToast('error', text);
+    }
+  }
+}
+run();
+</script>
 </body>
 </html>
