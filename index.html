@@ -90,8 +90,8 @@
                 document.getElementById('check-mark').style.display = 'block';
                 document.getElementById('success-ui').style.display = 'block';
 
-                // 5. 1.2 秒後自動關閉（留一點點時間讓客人看到打勾）
-                setTimeout(() => { liff.closeWindow(); }, 1200);
+                // 5. 0.8 秒後自動關閉（留一點點時間讓客人看到打勾）
+                setTimeout(() => { liff.closeWindow(); }, 800);
 
             } catch (err) {
                 console.error(err);
